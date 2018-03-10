@@ -53,7 +53,7 @@ def RestoreFile(RestoreInfo):
       shutil.move(RestoreInfo["SioBuiltPath"] + line, RestoreInfo["SioNotBuiltPath"])
 
   # Remove SioXXXPkg.fd in ["BinaryRenamePath"]
-  SioList = getSioList2(RestoreInfo["BinaryRenamePath"])
+  SioList = getSioList(RestoreInfo["BinaryRenamePath"], "^Sio.*Pkg.fd$")
   for line in SioList:
     if os.path.exists(RestoreInfo["BinaryRenamePath"] + line):
       os.remove(RestoreInfo["BinaryRenamePath"] + line)
