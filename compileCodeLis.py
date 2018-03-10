@@ -326,7 +326,7 @@ def main():
     try:
       os.rename (fromPath, toPath)
     except:
-      env["logFileFunc"](name + "not found")
+      env["logFileFunc"]("notfound: " + name)
       notFoundCount += 1
       continue
 
