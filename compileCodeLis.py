@@ -236,6 +236,19 @@ def OpenDevice (env):
         print(line.replace("|FALSE", "|TRUE"), end='')
   sys.exit()
 
+def OpenDeviceEx (env):
+  SioNameList = getSioList(env["sioNotBuiltPath"], "^Sio.*Pkg$")
+  for name2 in SioNameList:
+     EndFlag = False;
+     with fileinput.FileInput(env["sioNotBuiltPath"] + name2 + "/Package.dsc", inplace=True) as file2:
+       for line in file2:
+         if "# End Entry" in line:
+           EndFlag = True;
+         if not EndFlag:
+           print(line.replace("0x00, UINT16", "0x01, UINT16"), end="")
+         else:
+           print(line, end="")
+  sys.exit()
 
 def ArgvCheck(argv, env):
 
@@ -254,6 +267,8 @@ def ArgvCheck(argv, env):
       ShowErrorLog (ErrorLogFilePath, argv)
     elif argv[1] == "op":
       OpenDevice (env)
+    elif argv[1] == "opex":
+      OpenDeviceEx (env)
     else:
       print("Unknow commad!\n")
       sys.exit()
