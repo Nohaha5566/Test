@@ -357,12 +357,10 @@ def main():
 
 #  ToolKeyCheck()
 
-  env = getEnvironment("CompileListConfig.conf")
-
   SioDummyPkgDsc = "!import SioDummyPkg/Package.dsc"
   SioDummyPkgfdf = "!import SioDummyPkg/Package.fdf"
 
-  env = getEnvironment("compileListConfig.conf")
+  env = getEnvironment("CompileListConfig.conf")
 
   ArgvCheck(sys.argv, env)
   initialize(env)
