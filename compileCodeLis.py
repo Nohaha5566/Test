@@ -90,14 +90,14 @@ def makeLogFileFunction(path):
 
 def initialize(env):
   # rename existing binary file
-  if os.path.exists(env["BinaryFileName"]):
-    os.rename(env["BinaryFileName"], env["BinaryFileName"] + "Org.fd")
+  if os.path.exists(env["BinaryRenamePath"] + env["BinaryFileName"]):
+    os.rename(env["BinaryRenamePath"] + env["BinaryFileName"], env["BinaryRenamePath"] + env["BinaryFileName"] + "Org.fd")
 
-  # create log file's directory paht
+  # create log file's directory path
   if not os.path.exists(env["LogFilePath"]):
     os.makedirs(env["LogFilePath"])
 
-  # create error log file's directory paht
+  # create error log file's directory path
   if not os.path.exists(env["ErrorLogFilePath"]):
     os.makedirs(env["ErrorLogFilePath"])
 
@@ -132,15 +132,6 @@ def CreateRestoreInfo(env, dscPath, fdfPath, dscString, fdfString, SioDummyPkgDs
   RestoreInfo["BinaryRenamePath"] = env["BinaryRenamePath"]
   RestoreInfo["ProjectRootPath"] = env["ProjectRootPath"]
   return RestoreInfo
-
-def ToolKeyCheck():
-  user = getpass.getuser()
-  pwd = getpass.getpass()
-  ToolKey = "123"
-
-  if pwd != ToolKey:
-    print("Pleas pay $5 to bank account : XXXX-XXXX-XXXX to unlock this compile tool!\n")
-    sys.exit()
 
 def ShowLog(LogFilePath):
   count = 0
@@ -186,13 +177,17 @@ def ShowErrorLog (ErrorLogFilePath, argv):
       print("\n")
       input()
   elif len(argv) >= 3:
-    with open("BIOS/SioLog.txt") as f:
-      for line in f:
-        if "Sio" in line:
-          StartPosition = line.find("Sio")
-          EndPostion = line.find("Pkg")
-          LogDict.append(line[StartPosition:EndPostion+3])
-    tmp = int(argv[2])
+    try:
+      with open("BIOS/SioLog.txt") as f:
+        for line in f:
+          if "Sio" in line:
+            StartPosition = line.find("Sio")
+            EndPostion = line.find("Pkg")
+            LogDict.append(line[StartPosition:EndPostion+3])
+      tmp = int(argv[2])
+    except:
+      print("SioLog File isn't exist!\n")
+      sys.exit()
 
     try:
       with open(ErrorLogFilePath + LogDict[tmp] + ".log") as f:
@@ -314,7 +309,6 @@ def ConfFileTextAlign(Path):
 def getEnvironment(ConfigPath):
   CurrentSetting = {}
   defaultSetting = {
-
   "Paths"    : {
                      "ProjectRootPath"  : "../"
                    , "BinaryRenamePath" : "BIOS/"
@@ -324,20 +318,18 @@ def getEnvironment(ConfigPath):
                    , "ErrorLogFilePath" : "BIOS/ErrorLog/"
                  },
   "FileName" : {
-                     "BinaryFileName"   : "BIOS/Kabylake.fd"
+                     "BinaryFileName"   : "Kabylake.fd"
                    , "LogFileName"      : "SioLog.txt"
                    , "BatchFileName"    : "ProjectBuildUefi64.bat"
                  }
   }
 
-#  defaultSetting["LogFileFunc"] = makeLogFileFunction(defaultSetting["LogFilePath"] + defaultSetting["LogFileName"])
   if os.path.exists(ConfigPath):
     config = NewConfigParser(configparser.ConfigParser())
     config.read(ConfigPath)
-    for line in config.sections():
-      Section = line
-      for line2 in config[Section]:
-        CurrentSetting[line2] = config[Section][line2]
+    for Section in config.sections():
+      for Index in config.options(Section):
+        CurrentSetting[Index] = config[Section][Index]
     CurrentSetting["LogFileFunc"] = makeLogFileFunction(CurrentSetting["LogFilePath"] + CurrentSetting["LogFileName"])
   else:
     f = open(ConfigPath, "w")
@@ -347,15 +339,15 @@ def getEnvironment(ConfigPath):
          f.write("  " + line2 + " : " + defaultSetting[line][line2] + "\n")
       f.write("\n")
     f.close()
-    defaultSetting["LogFileFunc"] = makeLogFileFunction(defaultSetting["Paths"]["LogFilePath"] + defaultSetting["FileName"]["LogFileName"])
-    CurrentSetting = defaultSetting
+    for Section in defaultSetting:
+      for Index in defaultSetting[Section]:
+        CurrentSetting[Index] = defaultSetting[Section][Index]
+    CurrentSetting["LogFileFunc"] = makeLogFileFunction(defaultSetting["Paths"]["LogFilePath"] + defaultSetting["FileName"]["LogFileName"])
     ConfFileTextAlign(ConfigPath)
 
   return CurrentSetting
 
 def main():
-
-#  ToolKeyCheck()
 
   SioDummyPkgDsc = "!import SioDummyPkg/Package.dsc"
   SioDummyPkgfdf = "!import SioDummyPkg/Package.fdf"
@@ -364,7 +356,7 @@ def main():
 
   ArgvCheck(sys.argv, env)
   initialize(env)
-  sioNames = getSioList(env["SioNotBuiltPath"], "^Sio.*Pkg$")
+  SioNames = getSioList(env["SioNotBuiltPath"], "^Sio.*Pkg$")
 
   successCount = 0
   failedCount = 0
@@ -373,11 +365,11 @@ def main():
   env["LogFileFunc"](seperator);
   env["LogFileFunc"](strftime ("%Y-%m-%d %H:%H:%S", gmtime()))
 
-  if len(sioNames) == 0:
+  if len(SioNames) == 0:
     print("Not found any SioXXXPkg in allSio2 folder\n")
     sys.exit()
 
-  for name in sioNames:
+  for name in SioNames:
 
     # move the sio package to project root
     fromPath = env["SioNotBuiltPath"] + name
@@ -411,9 +403,8 @@ def main():
 
 
     # if the target binary exists, rename it to Sioname + BinaryFileName
-    SioKey = 0
-    if os.path.exists(env["BinaryFileName"]):
-      fromPath = env["BinaryFileName"]
+    if os.path.exists(env["BinaryRenamePath"] + env["BinaryFileName"]):
+      fromPath = env["BinaryRenamePath"] + env["BinaryFileName"]
       toPath = env["BinaryRenamePath"] + name + ".fd"
       os.rename(fromPath, toPath)
       env["LogFileFunc"](" success: " + name)
