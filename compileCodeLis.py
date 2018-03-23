@@ -422,7 +422,7 @@ def main():
     toPath = env["SioBuiltPath"] + name
     os.rename (fromPath, toPath)
 
-  for name in sioNames:
+  for name in SioNames:
     shutil.move(env["SioBuiltPath"] + name,  env["SioNotBuiltPath"])
 
   env["LogFileFunc"](" success: " + str(successCount))
