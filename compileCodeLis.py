@@ -70,25 +70,9 @@ def executeBatchFile(path, RestoreInfo):
 
 def replaceFirstLine(path, s, TargetStr):
 
-#  SioDummyPkgDsc = "!import SioDummyPkg/Package.dsc"
-#  SioDummyPkgFdf = "!import SioDummyPkg/Package.fdf"
-
   with fileinput.FileInput(path, inplace=True) as f:
     for line in f:
       print(line.replace(TargetStr, s), end="")
-
-#  content = ""
-#  with open(path, "r") as f:
-#    content = f.read()
-
-#  print (path, s)
-
-#  content = content.splitlines()
-#  content[33] = s
-#  content = "\n".join(content)
-
-#  with open(path, "w") as f:
-#    f.write(content)
 
 def makeLogFileFunction(path):
 
@@ -164,13 +148,9 @@ def ShowLog(LogFilePath):
       for line in f:
         if "Sio" in line:
           print("[%02d] %s" %(count, line), end="")
-#          StartPosition = line.find("Sio")
-#          EndPostion = line.find("Pkg")
-#          LogDict.append(line[StartPosition:EndPostion+3])
           count += 1
         else:
           print(line, end="")
-#    print(open(LogFilePath).read())
     sys.exit()
   else:
     print("Log File isn't exist!\n")
@@ -315,7 +295,6 @@ def main():
 
   ArgvCheck(sys.argv, env)
   initialize(env)
-#  Log = InitLoger(env, "Logger1", "%(asctime)s %(message)s")
   sioNames = getSioList(env["sioNotBuiltPath"], "^Sio.*Pkg$")
 
   successCount = 0
@@ -328,8 +307,6 @@ def main():
   if len(sioNames) == 0:
     print("Not found any SioXXXPkg in allSio2 folder\n")
     sys.exit()
-
-#  Log.info("======= START =======")
 
   for name in sioNames:
 
@@ -371,15 +348,9 @@ def main():
       toPath = env["binaryRenamePath"] + name + ".fd"
       os.rename(fromPath, toPath)
       env["logFileFunc"](" success: " + name)
-#      LogDict[SioKey] = LogDict.append(name)
-#      SioKey +=1
-#      Log.info("success: " + name)
       successCount += 1
     else:
       env["logFileFunc"](" failed: " + name)
-#      Log.info("failed: " + name)
-#      LogDict[SioKey] = LogDict.append(name)
-#      SioKey +=1
       failedCount += 1
       try:
         os.rename ("log.txt", env["ErrorLogFilePath"] + name + ".log")
@@ -399,8 +370,6 @@ def main():
   env["logFileFunc"](" not found: " + str(notFoundCount))
   env["logFileFunc"](strftime ("%Y-%m-%d %H:%H:%S", gmtime()))
   env["logFileFunc"](seperator)
-
-#  Log.info("======== END ========")
 
 
 if __name__ == "__main__":
