@@ -11,10 +11,11 @@ import codecs
 from stat import *
 
 def GenerateGuid():
+  # This function will generate a set of GUID
   return uuid.uuid4()
 
 def GetFileList(Regex):
-
+  # This function will get destination file by regular expression
   Buffer = []
 
   regex = re.compile (Regex)
@@ -24,31 +25,40 @@ def GetFileList(Regex):
   return Buffer
 
 def DepthSearchFile():
-  #This function will return dirPath, dirNames, and fileNames
+  # This function will return dirPath, dirNames, and fileNames
   return os.walk()
 
 def RenameFile(Dst):
+  # This function will rename destination file's name
   return os.rename(Dst)
 
 def CopyFile(Src, Dst):
+  # This function will copy source file to destination path
   return shutil.copy2(Src, Dst)
 
 def MoveFile(Src, Dst):
+  # This function will move source file to destination path
   return shutil.move(Src, Dst)
 
 def DeleteFile(Dst):
+  # This function will delete destination file
   return os.remove(Dst)
 
 def CopyFolder(Src, Dst):
+  # This function will copy a source folder to destination path
   return shutil.copytree(Src, Dst)
 
-def DeleteFolder(Src):
-  return shutil.rmtree(Src)
+def DeleteFolder(Dst):
+  # This function will delete a destination folder
+  return shutil.rmtree(Dst)
 
 def CopyFileContent(Src, Dst):
+  # This function will copy source file content to destination file
   return shutil.copyfile(Src, Dst)
 
 def OverrideFile(SrcFilePathList, DstPathList):
+  # This function will override file from SrcFilePathList to DstPathList
+
 #  SrcFilePathList = {
 #    "File1": "",
 #    "File2": "",
@@ -75,13 +85,14 @@ def OverrideFile(SrcFilePathList, DstPathList):
        print("End of line\n!")
 
 def RelplaceString(FilePath, BeforStr, AfterStr):
+  # This function will replace string from BeforStr to AfterStr
   if os.path.exists(FilePath):
     with fileinput.FileInput(FilePath, inplace=True) as f2:
       for line in f2:
         print(line.replace(BeforStr, AfterStr), end="")
 
 def InsertStringToFile(FilePath, KeyWord, String):
-
+  # This function will insert string under KeyWord string
   Buffer = []
 
   with fileinput.FileInput(FilePath, inplace=False) as file2:
@@ -96,13 +107,13 @@ def InsertStringToFile(FilePath, KeyWord, String):
     f.write(line)
   f.close()
 
-def InsertStringToUni(Path, KeyWordStr, TargetStr):
-
+def InsertStringToUni(Path, KeyWord, TargetStr):
+  # This function will insert string under KeyWord string(For unicode file)
   Buffer = []
 
   with codecs.open(Path, encoding='utf-16') as file:
     for line in file:
-      if KeyWordStr in line:
+      if KeyWord in line:
         Buffer.append(line + TargetStr)
       else:
         Buffer.append(line)
@@ -112,7 +123,7 @@ def InsertStringToUni(Path, KeyWordStr, TargetStr):
       f.write(line)
 
 def DeleteStringFromFile(Path, KeyWord):
-
+  # This function will delete string under KeyWord string
   Buffer = []
   flag = False
 
@@ -132,7 +143,7 @@ def DeleteStringFromFile(Path, KeyWord):
   f2.close()
 
 def DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine):
-
+  # This function will delete multi line string under KeyWord string by NumRmLine(It's a integer number)
   Buffer = []
   flag = True
 
@@ -157,7 +168,7 @@ def DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine):
   f.close()
 
 def ModifyInfFileGuid(FilePath):
-
+  # This function will update GUID in a file
   NewStr = ""
   Buffer = []
   GuidStrLength = 36
@@ -178,6 +189,7 @@ def ModifyInfFileGuid(FilePath):
   TmpFile.close()
 
 def StringAlign(Path, SampleStr, Format):
+  # This function will make target string align with SampleStr
 
   regex = re.compile(Format)
   Buffer = []
