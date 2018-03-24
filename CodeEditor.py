@@ -23,6 +23,10 @@ def GetFileList(Regex):
       Buffer.append(str(line))
   return Buffer
 
+def DepthSearchFile():
+  #This function will return dirPath, dirNames, and fileNames
+  return os.walk()
+
 def RenameFile(Dst):
   return os.rename(Dst)
 
@@ -99,7 +103,7 @@ def InsertStringToUni(Path, KeyWordStr, TargetStr):
   with codecs.open(Path, encoding='utf-16') as file:
     for line in file:
       if KeyWordStr in line:
-        Buffer.append(line + "\n" + TargetStr)
+        Buffer.append(line + TargetStr)
       else:
         Buffer.append(line)
 
@@ -134,7 +138,7 @@ def DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine):
 
   with fileinput.FileInput(FilePath, inplace=False) as file2:
      for line in file2:
-       if line[0:-1] == KeyWord:
+       if KeyWord in line:
          NumRmLine -= 1
          flag = False
        elif NumRmLine == 0:
