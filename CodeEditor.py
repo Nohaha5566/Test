@@ -196,8 +196,6 @@ def StringAlign(Path, SampleStr, Format):
           NewStr += Space*(ArgPos - Length) + line.split()[Index]
           Index += 1
         Buffer.append(NewStr + "\n")
-      else:
-        continue
 
       if not Flag:
         Buffer.append(line)
