@@ -76,7 +76,7 @@ def RelplaceString(FilePath, BeforStr, AfterStr):
       for line in f2:
         print(line.replace(BeforStr, AfterStr), end="")
 
-def InsertStringToFIle(FilePath, KeyWord, String):
+def InsertStringToFile(FilePath, KeyWord, String):
 
   Buffer = []
 
@@ -231,7 +231,7 @@ def main():
   # Text Handling
   #
 #  RelplaceString(FilePath, BeforStr, AfterStr)
-#  InsertStringToFIle(FilePath, KeyWord, String)
+#  InsertStringToFile(FilePath, KeyWord, String)
 #  InsertStringToUni(Path, KeyWordStr, TargetStr)
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine)
