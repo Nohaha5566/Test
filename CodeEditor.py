@@ -28,9 +28,9 @@ def DepthSearchFile():
   # This function will return dirPath, dirNames, and fileNames
   return os.walk()
 
-def RenameFile(Dst):
+def RenameFile(Src, Dst):
   # This function will rename destination file's name
-  return os.rename(Dst)
+  return os.rename(Src, Dst)
 
 def CopyFile(Src, Dst):
   # This function will copy source file to destination path
@@ -232,7 +232,7 @@ def main():
   #
   # File System
   #
-#  RenameFile(Dst):
+#  RenameFile(Src, Dst)
 #  CopyFile(Src, Dst):
 #  MoveFile(Src, Dst):
 #  DeleteFile(Dst):
