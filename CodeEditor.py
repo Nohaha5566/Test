@@ -24,9 +24,9 @@ def GetFileList(Regex):
       Buffer.append(str(line))
   return Buffer
 
-def DepthSearchFile():
+def DepthSearchFile(Dst):
   # This function will return dirPath, dirNames, and fileNames
-  return os.walk()
+  return os.walk(Dst)
 
 def RenameFile(Src, Dst):
   # This function will rename destination file's name
@@ -188,6 +188,39 @@ def ModifyInfFileGuid(FilePath):
     TmpFile.write(line)
   TmpFile.close()
 
+def ModifyDecAndHeaderFileGuid(FilePath):
+  # This function will update GUID in a DEC or Header file
+  Buffer = []
+  MiddleStr = ""
+  regex = re.compile("{.*\w{8}.*\w{4}.*\w{4}.*{.*\w{2}.*\w{2}.*\w{2}.*\w{2}.*\w{2}.*\w{2}.*\w{2}.*\w{2}.*}*}")
+  GuidBuffer = []
+  count = 0
+  with fileinput.FileInput(FilePath, inplace=False) as f:
+    for line in f:
+      if regex.search(line):
+        StartPos = line.find("{")
+        EndPos = line.rfind("}")
+        list = str(GenerateGuid()).split("-")
+        for line2 in list:
+          if count >= 3:
+            for Index in range(0, len(line2), 2):
+               GuidBuffer.append(line2[Index:Index+2])
+          else:
+            GuidBuffer.append(line2)
+          count += 1
+        FirstStr = line[0:StartPos]
+        print(FirstStr)
+        MiddleStr = "{ 0x%s, 0x%s, 0x%s, { 0x%s, 0x%s, 0x%s, 0x%s, 0x%s, 0x%s, 0x%s, 0x%s } }" %(tuple(GuidBuffer))
+        LastStr = line[StartPos+len(MiddleStr):-1]
+        Buffer.append(FirstStr+MiddleStr+LastStr+"\n")
+      else:
+        Buffer.append(line)
+
+  TmpFile = open(FilePath, 'w')
+  for line in Buffer:
+    TmpFile.write(line)
+  TmpFile.close()
+
 def StringAlign(Path, SampleStr, Format):
   # This function will make target string align with SampleStr
 
@@ -232,6 +265,8 @@ def main():
   #
   # File System
   #
+#  GetFileList(Regex):
+#  DepthSearchFile(Dst):
 #  RenameFile(Src, Dst)
 #  CopyFile(Src, Dst):
 #  MoveFile(Src, Dst):
@@ -250,6 +285,7 @@ def main():
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine)
 #  ModifyInfFileGuid(FilePath)
+#  ModifyDecAndHeaderFileGuid(FilePath)
 #  StringAlign(Path, SampleStr, Format)
 
 if __name__ == "__main__":
