@@ -107,6 +107,25 @@ def InsertStringToFile(FilePath, KeyWord, String):
     f.write(line)
   f.close()
 
+def InsertStringToFileEx(FilePath, KeyWord, SrcFile):
+  # This function will insert string under KeyWord string
+  Buffer = []
+  Src = open(SrcFile, "r")
+
+  with fileinput.FileInput(FilePath, inplace=False) as file2:
+     for line in file2:
+       if KeyWord in line[0:-1]:
+         Buffer.append(line)
+         for line2 in Src:
+           Buffer.append(line2)
+       else:
+         Buffer.append(line)
+
+  f = open(FilePath, 'w')
+  for line in Buffer:
+    f.write(line)
+  f.close()
+
 def InsertStringToUni(Path, KeyWord, TargetStr):
   # This function will insert string under KeyWord string(For unicode file)
   Buffer = []
@@ -281,6 +300,7 @@ def main():
   #
 #  RelplaceString(FilePath, BeforStr, AfterStr)
 #  InsertStringToFile(FilePath, KeyWord, String)
+#  InsertStringToFileEx(FilePath, KeyWord, SrcFile)
 #  InsertStringToUni(Path, KeyWordStr, TargetStr)
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine)
