@@ -257,13 +257,19 @@ def StringAlign(Path, SampleStr, Format):
 
   with open(Path, 'r') as f:
     for line in f:
-      if regex.search(line) and (len(line) <= len(SampleStr)):
+      if regex.search(line) and (len(line.split()) == len(SampleStr.split())):
         Flag = True
         for ArgPos in SplitList:
           Length = len(NewStr)
           NewStr += Space*(ArgPos - Length) + line.split()[Index]
           Index += 1
         Buffer.append(NewStr + "\n")
+      elif regex.search(line) and (not (len(line.split()) == len(SampleStr.split()))):
+        print("========================== Waring! ==========================")
+        print("Sample string size(%d) not equal with KeyWord string size(%d)"  %(len(SampleStr.split()), len(line.split())))
+        print("=============================================================")
+      else:
+        continue
 
       if not Flag:
         Buffer.append(line)
