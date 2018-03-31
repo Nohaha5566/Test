@@ -268,8 +268,6 @@ def StringAlign(Path, SampleStr, Format):
         print("========================== Waring! ==========================")
         print("Sample string size(%d) not equal with KeyWord string size(%d)"  %(len(SampleStr.split()), len(line.split())))
         print("=============================================================")
-      else:
-        continue
 
       if not Flag:
         Buffer.append(line)
