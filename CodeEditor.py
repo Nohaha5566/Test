@@ -107,14 +107,29 @@ def InsertStringToFile(FilePath, KeyWord, String):
     f.write(line)
   f.close()
 
-def InsertStringToFileEx(FilePath, KeyWord, SrcFile):
+def InsertStringToFileEx(FilePath, KeyWord, KeyWordCount, ShiftLineNum, SrcFile):
   # This function will insert string under KeyWord string
   Buffer = []
   Src = open(SrcFile, "r")
+  Count = 0
+  Count2 = 0
+  FindLineNum = 0
 
   with fileinput.FileInput(FilePath, inplace=False) as file2:
      for line in file2:
+       Count += 1
        if KeyWord in line[0:-1]:
+         if Count2 == KeyWordCount:
+           FindLineNum = Count - ShiftLineNum
+           break
+         else:
+           Count2 += 1
+
+  Count = 0
+  with fileinput.FileInput(FilePath, inplace=False) as file2:
+     for line in file2:
+       Count += 1
+       if Count == FindLineNum:
          Buffer.append(line)
          for line2 in Src:
            Buffer.append(line2)
@@ -161,30 +176,35 @@ def DeleteStringFromFile(Path, KeyWord):
     f2.write(line)
   f2.close()
 
-def DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine):
+def DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine):
   # This function will delete multi line string under KeyWord string by NumRmLine(It's a integer number)
   Buffer = []
   flag = True
+  EndFlag = False
+  Count = 0
 
   with fileinput.FileInput(FilePath, inplace=False) as file2:
      for line in file2:
        if KeyWord in line:
-         NumRmLine -= 1
-         flag = False
+         if Count == KeyWordCount:
+           if not EndFlag:
+             NumRmLine -= 1
+             flag = False
+           else:
+             Buffer.append(line)
+         else:
+           Buffer.append(line)
+           Count += 1
+
        elif NumRmLine == 0:
          flag = True
+         EndFlag = True
          Buffer.append(line)
        else:
          if flag:
            Buffer.append(line)
          else:
            NumRmLine -= 1
-
-  f = open(FilePath, 'w')
-
-  for line in Buffer:
-    f.write(line)
-  f.close()
 
 def ModifyInfFileGuid(FilePath):
   # This function will update GUID in a file
@@ -304,10 +324,10 @@ def main():
   #
 #  RelplaceString(FilePath, BeforStr, AfterStr)
 #  InsertStringToFile(FilePath, KeyWord, String)
-#  InsertStringToFileEx(FilePath, KeyWord, SrcFile)
+#  InsertStringToFileEx(FilePath, KeyWord, KeyWordCount, ShiftLineNum, SrcFile)
 #  InsertStringToUni(Path, KeyWordStr, TargetStr)
 #  DeleteStringFromFile(Path, KeyWord)
-#  DeleteStringFromFileEx(FilePath, KeyWord, NumRmLine)
+#  DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine)
 #  ModifyInfFileGuid(FilePath)
 #  ModifyDecAndHeaderFileGuid(FilePath)
 #  StringAlign(Path, SampleStr, Format)
