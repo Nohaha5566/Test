@@ -401,7 +401,6 @@ def main():
     replaceFirstLine(dscPath, SioDummyPkgDsc, dscString)
     replaceFirstLine(fdfPath, SioDummyPkgfdf, fdfString)
 
-
     # if the target binary exists, rename it to Sioname + BinaryFileName
     if os.path.exists(env["BinaryRenamePath"] + env["BinaryFileName"]):
       fromPath = env["BinaryRenamePath"] + env["BinaryFileName"]
