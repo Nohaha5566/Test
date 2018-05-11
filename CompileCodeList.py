@@ -141,6 +141,15 @@ def CreateRestoreInfo(env, dscPath, fdfPath, dscString, fdfString, SioDummyPkgDs
 
 def ShowLog(LogFilePath):
   count = 0
+  ColorDict = {
+    0 : Fore.RED,
+    1 : Fore.GREEN,
+    2 : Fore.BLUE,
+    3 : Fore.MAGENTA,
+    4 : Fore.CYAN,
+    5 : Fore.WHITE,
+  }
+
   if not len(LogDict) == 0:
     LogDict.clear()
 
@@ -148,7 +157,13 @@ def ShowLog(LogFilePath):
     with open(LogFilePath) as f:
       for line in f:
         if "Sio" in line:
-          print("[%02d] %s" %(count, line), end="")
+          if "failed" in line:
+            StartPos = line.find("failed")
+            EndPos = StartPos + len("failed")
+            TmpStr = "  " + Fore.RED + line[StartPos:EndPos] + Fore.RESET + line[EndPos:-1] + "\n"
+            print(Fore.MAGENTA + "[%02d]" %(count) + Fore.RESET + TmpStr, end="")
+          else:
+            print(Fore.MAGENTA + "[%02d]" %(count) + Fore.RESET + line, end="")
           count += 1
         else:
           print(line, end="")
