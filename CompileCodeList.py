@@ -229,6 +229,23 @@ def OpenDeviceEx (env):
            print(line, end="")
   sys.exit()
 
+def ShowHelpInfo():
+
+  HelpInfo = "usage: CompileCodeList.py [Option] ... [ log | clean | err | op | opex | bu ] [arg] ...\n\
+Options and arguments (and corresponding environment variables):\n\
+log          : List build report summary\n\
+clean        : Delete log, errlog and SioXXXPkg.bin\n\
+err <Index>  : List build error report step by step, <Index> is a optional argument,\n\
+               it used to view the specified SIO error report \n\
+op           : Turn on SIO 5.X all device to TRUE\n\
+opex         : Turn on SIO 5.0 all device to TRUE\n\
+bu           : Start to build SIO\n\
+###########################################################################################\n\
+2018/05/11 released.\n\
+Author   : Renjie Tsai\n\
+Maintain : Ichan Chen\n"
+  print (HelpInfo)
+
 def ArgvCheck(argv, env):
 
   LogFilePath = env["LogFilePath"] + env["LogFileName"]
@@ -236,7 +253,8 @@ def ArgvCheck(argv, env):
   BinaryRenamePath = env["BinaryRenamePath"]
 
   if len(argv) < 2:
-    pass
+    ShowHelpInfo ()
+    sys.exit()
   else:
     if argv[1] == "log":
       ShowLog (LogFilePath)
@@ -248,6 +266,8 @@ def ArgvCheck(argv, env):
       OpenDevice (env)
     elif argv[1] == "opex":
       OpenDeviceEx (env)
+    elif argv[1] == "bu":
+      pass
     else:
       print("Unknow commad!\n")
       sys.exit()
