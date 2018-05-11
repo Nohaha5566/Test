@@ -13,6 +13,8 @@ import logging
 import logging.handlers
 import configparser
 from time import gmtime, strftime
+from colorama import init
+from colorama import Fore, Back, Style
 
 seperator = "=" * 80
 LogDict = []
@@ -50,7 +52,7 @@ def RestoreFile(RestoreInfo):
     elif os.path.exists(RestoreInfo["ProjectRootPath"] + line):
       shutil.move(RestoreInfo["ProjectRootPath"] + line, RestoreInfo["SioNotBuiltPath"])
     else:
-      Print("End of move file to allSio2 folder\n")
+      Print(Fore.RED + "End of move file to allSio2 folder\n")
 
   # Move SioXXXPkg from ["SioBuiltPath"] to ["SioNotBuiltPath"]
   SioList = getSioList(RestoreInfo["SioBuiltPath"], "^Sio.*Pkg$")
@@ -69,7 +71,7 @@ def executeBatchFile(path, RestoreInfo):
       p = subprocess.Popen(path)
       p.wait()
   except KeyboardInterrupt:
-      print("Program is interrupted!\n")
+      print(Fore.RED + "Program is interrupted!\n")
       RestoreFile(RestoreInfo)
       sys.exit(0)
 
@@ -89,6 +91,10 @@ def makeLogFileFunction(path):
   return f
 
 def initialize(env):
+
+  #On Windows, calling init() will filter ANSI escape sequences out of any text sent to stdout or stderr, and replace them with equivalent Win32 calls.
+  init ()
+
   # rename existing binary file
   if os.path.exists(env["BinaryRenamePath"] + env["BinaryFileName"]):
     os.rename(env["BinaryRenamePath"] + env["BinaryFileName"], env["BinaryRenamePath"] + env["BinaryFileName"] + "Org.fd")
@@ -148,7 +154,7 @@ def ShowLog(LogFilePath):
           print(line, end="")
     sys.exit()
   else:
-    print("Log File isn't exist!\n")
+    print(Fore.RED + "Log File isn't exist!\n")
     sys.exit()
 
 def CleanLogAndBinaryFile(LogFilePath, ErrorLogFilePath, BinaryRenamePath):
@@ -161,7 +167,7 @@ def CleanLogAndBinaryFile(LogFilePath, ErrorLogFilePath, BinaryRenamePath):
         os.remove(BinaryRenamePath + line)
     sys.exit()
   else:
-    print("Clean Log File and bin was failed!\n")
+    print(Fore.RED + "Clean Log File and bin was failed!\n")
     sys.exit()
 
 def ShowErrorLog (ErrorLogFilePath, argv):
@@ -186,7 +192,7 @@ def ShowErrorLog (ErrorLogFilePath, argv):
             LogDict.append(line[StartPosition:EndPostion+3])
       tmp = int(argv[2])
     except:
-      print("SioLog File isn't exist!\n")
+      print(Fore.RED + "SioLog File isn't exist!\n")
       sys.exit()
 
     try:
@@ -197,10 +203,10 @@ def ShowErrorLog (ErrorLogFilePath, argv):
       for line in Buffer:
         print(line, end="")
     except:
-      print("Error Log File isn't exist!\n")
+      print(Fore.RED + "Error Log File isn't exist!\n")
     sys.exit()
   else:
-    print("Error Log File isn't exist!\n")
+    print(Fore.RED + "Error Log File isn't exist!\n")
   sys.exit()
 
 def OpenDevice (env):
@@ -231,26 +237,31 @@ def OpenDeviceEx (env):
 
 def ShowHelpInfo():
 
-  HelpInfo = "usage: CompileCodeList.py [Option] ... [ log | clean | err | op | opex | bu ] [arg] ...\n\
-Options and arguments (and corresponding environment variables):\n\
-log          : List build report summary\n\
-clean        : Delete log, errlog and SioXXXPkg.bin\n\
-err <Index>  : List build error report step by step, <Index> is a optional argument,\n\
-               it used to view the specified SIO error report \n\
-op           : Turn on SIO 5.X all device to TRUE\n\
-opex         : Turn on SIO 5.0 all device to TRUE\n\
-bu           : Start to build SIO\n\
-###########################################################################################\n\
-2018/05/11 released.\n\
-Author   : Renjie Tsai\n\
-Maintain : Ichan Chen\n"
-  print (HelpInfo)
+  HelpInfo = "Usage: " + Fore.YELLOW + "CompileCodeList.py [Option] ... [ log | clean | err | op | opex | bu ] [arg] ...\n" + Fore.RESET + \
+"Options and arguments (and corresponding environment variables):\n" + \
+Fore.RED + "log          " + Fore.RESET + ":List build report summary\n" + \
+Fore.RED + "clean        " + Fore.RESET + ":Delete log, errlog and SioXXXPkg.bin\n" + \
+Fore.RED + "err <Index>  " + Fore.RESET + ":List build error report step by step, <Index> is a optional argument,\n" + \
+"              it used to view the specified SIO error report \n" + \
+Fore.RED + "op           " + Fore.RESET + ":Turn on SIO 5.X all device to TRUE\n" + \
+Fore.RED + "opex         " + Fore.RESET + ":Turn on SIO 5.0 all device to TRUE\n" + \
+Fore.RED + "bu           " + Fore.RESET + ":Start to build SIO\n" + \
+"###########################################################################################\n" + \
+"2018/05/11 released.\n" + \
+"Author   : " + Fore.CYAN + "Renjie Tsai\n" + Fore.RESET + \
+"Maintain : " + Fore.CYAN + "Ichan Chen\n" + Fore.RESET
+
+  print(Fore.RESET)
+  print(HelpInfo)
 
 def ArgvCheck(argv, env):
 
   LogFilePath = env["LogFilePath"] + env["LogFileName"]
   ErrorLogFilePath = env["ErrorLogFilePath"]
   BinaryRenamePath = env["BinaryRenamePath"]
+
+  #On Windows, calling init() will filter ANSI escape sequences out of any text sent to stdout or stderr, and replace them with equivalent Win32 calls.
+  init()
 
   if len(argv) < 2:
     ShowHelpInfo ()
@@ -269,7 +280,7 @@ def ArgvCheck(argv, env):
     elif argv[1] == "bu":
       pass
     else:
-      print("Unknow commad!\n")
+      print(Fore.RED + "Invalid commad!\n")
       sys.exit()
 
 def TextFilter (name, path):
@@ -386,7 +397,7 @@ def main():
   env["LogFileFunc"](strftime ("%Y-%m-%d %H:%H:%S", gmtime()))
 
   if len(SioNames) == 0:
-    print("Not found any SioXXXPkg in allSio2 folder\n")
+    print(Fore.RED + "Not found any SioXXXPkg in allSio2 folder\n")
     sys.exit()
 
   for name in SioNames:
@@ -449,6 +460,9 @@ def main():
   env["LogFileFunc"](" not found: " + str(notFoundCount))
   env["LogFileFunc"](strftime ("%Y-%m-%d %H:%H:%S", gmtime()))
   env["LogFileFunc"](seperator)
+
+  #To stop using colorama before your program exits
+  deinit()
 
 if __name__ == "__main__":
   main()
