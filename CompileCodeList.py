@@ -254,13 +254,13 @@ def ShowHelpInfo():
 
   HelpInfo = "Usage: " + Fore.YELLOW + "CompileCodeList.py [Option] ... [ log | clean | err | op | opex | bu ] [arg] ...\n" + Fore.RESET + \
 "Options and arguments (and corresponding environment variables):\n" + \
-Fore.RED + "log          " + Fore.RESET + ":List build report summary\n" + \
-Fore.RED + "clean        " + Fore.RESET + ":Delete log, errlog and SioXXXPkg.bin\n" + \
-Fore.RED + "err <Index>  " + Fore.RESET + ":List build error report step by step, <Index> is a optional argument,\n" + \
-"              it used to view the specified SIO error report \n" + \
-Fore.RED + "op           " + Fore.RESET + ":Turn on SIO 5.X all device to TRUE\n" + \
-Fore.RED + "opex         " + Fore.RESET + ":Turn on SIO 5.0 all device to TRUE\n" + \
-Fore.RED + "bu           " + Fore.RESET + ":Start to build SIO\n" + \
+Fore.RED + "log          " + Fore.RESET + ": List build report summary\n" + \
+Fore.RED + "clean        " + Fore.RESET + ": Delete log, errlog and SioXXXPkg.bin\n" + \
+Fore.RED + "err <Index>  " + Fore.RESET + ": List build error report step by step, <Index> is a optional argument,\n" + \
+"               it used to view the specified SIO error report \n" + \
+Fore.RED + "op           " + Fore.RESET + ": Turn on SIO 5.X all device to TRUE\n" + \
+Fore.RED + "opex         " + Fore.RESET + ": Turn on SIO 5.0 all device to TRUE\n" + \
+Fore.RED + "bu           " + Fore.RESET + ": Start to build SIO\n" + \
 "###########################################################################################\n" + \
 "2018/05/11 released.\n" + \
 "Author   : " + Fore.CYAN + "Renjie Tsai\n" + Fore.RESET + \
