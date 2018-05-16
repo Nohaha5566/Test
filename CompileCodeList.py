@@ -13,7 +13,7 @@ import logging
 import logging.handlers
 import configparser
 from time import gmtime, strftime
-from colorama import init
+from colorama import init, deinit
 from colorama import Fore, Back, Style
 
 seperator = "=" * 80
