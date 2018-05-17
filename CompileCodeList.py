@@ -139,7 +139,7 @@ def CreateRestoreInfo(env, dscPath, fdfPath, dscString, fdfString, SioDummyPkgDs
   RestoreInfo["ProjectRootPath"] = env["ProjectRootPath"]
   return RestoreInfo
 
-def ShowLog(LogFilePath):
+def ShowLog(LogFilePath, AutoRefreshFlag):
   count = 0
   ColorDict = {
     0 : Fore.RED,
@@ -167,7 +167,10 @@ def ShowLog(LogFilePath):
           count += 1
         else:
           print(line, end="")
-    sys.exit()
+    if AutoRefreshFlag:
+      time.sleep(60)
+    else:
+      sys.exit()
   else:
     print(Fore.RED + "Log File isn't exist!\n")
     sys.exit()
@@ -261,6 +264,7 @@ Fore.RED + "err <Index>  " + Fore.RESET + ": List build error report step by ste
 Fore.RED + "op           " + Fore.RESET + ": Turn on SIO 5.X all device to TRUE\n" + \
 Fore.RED + "opex         " + Fore.RESET + ": Turn on SIO 5.0 all device to TRUE\n" + \
 Fore.RED + "bu           " + Fore.RESET + ": Start to build SIO\n" + \
+Fore.RED + "au           " + Fore.RESET + ": Auto Update Log\n" + \
 "###########################################################################################\n" + \
 "2018/05/11 released.\n" + \
 "Author   : " + Fore.CYAN + "Renjie Tsai\n" + Fore.RESET + \
@@ -268,6 +272,16 @@ Fore.RED + "bu           " + Fore.RESET + ": Start to build SIO\n" + \
 
   print(Fore.RESET)
   print(HelpInfo)
+
+def AutoUpdateLog(env):
+  LogFilePath = env["LogFilePath"] + env["LogFileName"]
+  while True:
+    try:
+      os.system ("cls")
+      ShowLog (LogFilePath, True)
+    except KeyboardInterrupt:
+      print(Fore.RED + "Program is interrupted!\n")
+      sys.exit(0)
 
 def ArgvCheck(argv, env):
 
@@ -283,7 +297,7 @@ def ArgvCheck(argv, env):
     sys.exit()
   else:
     if argv[1] == "log":
-      ShowLog (LogFilePath)
+      ShowLog (LogFilePath, False)
     elif argv[1] == "clean":
       CleanLogAndBinaryFile (LogFilePath, ErrorLogFilePath, BinaryRenamePath)
     elif argv[1] == "err":
@@ -294,6 +308,8 @@ def ArgvCheck(argv, env):
       OpenDeviceEx (env)
     elif argv[1] == "bu":
       pass
+    elif argv[1] == "au":
+      AutoUpdateLog (env)
     else:
       print(Fore.RED + "Invalid commad!\n")
       sys.exit()
