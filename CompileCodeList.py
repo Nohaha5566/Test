@@ -139,7 +139,7 @@ def CreateRestoreInfo(env, dscPath, fdfPath, dscString, fdfString, SioDummyPkgDs
   RestoreInfo["ProjectRootPath"] = env["ProjectRootPath"]
   return RestoreInfo
 
-def ShowLog(LogFilePath, AutoRefreshFlag):
+def ShowLog(LogFilePath, LogRefreshTime, AutoRefreshFlag):
   count = 0
   ColorDict = {
     0 : Fore.RED,
@@ -168,7 +168,7 @@ def ShowLog(LogFilePath, AutoRefreshFlag):
         else:
           print(line, end="")
     if AutoRefreshFlag:
-      time.sleep(60)
+      time.sleep(int(LogRefreshTime))
     else:
       sys.exit()
   else:
@@ -278,7 +278,7 @@ def AutoUpdateLog(env):
   while True:
     try:
       os.system ("cls")
-      ShowLog (LogFilePath, True)
+      ShowLog (LogFilePath, env["LogRefreshTime"], True)
     except KeyboardInterrupt:
       print(Fore.RED + "Program is interrupted!\n")
       sys.exit(0)
@@ -383,6 +383,9 @@ def getEnvironment(ConfigPath):
                      "BinaryFileName"   : "Kabylake.fd"
                    , "LogFileName"      : "SioLog.txt"
                    , "BatchFileName"    : "ProjectBuildUefi64.bat"
+                 },
+  "Parameter": {
+                     "LogRefreshTime"   : "10"
                  }
   }
 
