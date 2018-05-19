@@ -15,9 +15,13 @@ import configparser
 from time import gmtime, strftime
 from colorama import init, deinit
 from colorama import Fore, Back, Style
+from tqdm import tqdm
 
 seperator = "=" * 80
 LogDict = []
+ProgressPercent = 0
+gSioBuiltCount = 0
+TotalSioCount = 0
 
 class NewConfigParser(configparser.ConfigParser):
 
@@ -139,8 +143,39 @@ def CreateRestoreInfo(env, dscPath, fdfPath, dscString, fdfString, SioDummyPkgDs
   RestoreInfo["ProjectRootPath"] = env["ProjectRootPath"]
   return RestoreInfo
 
-def ShowLog(LogFilePath, LogRefreshTime, AutoRefreshFlag):
+def GetSioCount(env):
+  global TotalSioCount
+  regex = re.compile ("^Sio.*Pkg$")
+  for d in os.listdir(env["SioNotBuiltPath"]) :
+    if regex.search(d) :
+      TotalSioCount += 1
+  for e in os.listdir(env["SioBuiltPath"]):
+    if regex.search(e) :
+      TotalSioCount += 1
+  for f in os.listdir(env["ProjectRootPath"]):
+    if regex.search(f) :
+      TotalSioCount += 1
+
+def ProgressBarControl(env, LogFilePath):
+  global ProgressPercent
+  global gSioBuiltCount
+  Count = 0
+  IsFindCurrentLogLable = False
+  with fileinput.FileInput(LogFilePath, inplace=False) as file2:
+    for line in file2:
+      if "#CurrentLog#" in line:
+        IsFindCurrentLogLable = True
+      if ("Sio" in line) and IsFindCurrentLogLable:
+        Count += 1
+  gSioBuiltCount = Count
+  print(Fore.CYAN)
+  with tqdm(total=TotalSioCount) as pbar:
+    pbar.update(gSioBuiltCount)
+  print(Fore.RESET)
+
+def ShowLog(env, LogFilePath, LogRefreshTime, AutoRefreshFlag):
   count = 0
+  IsFindCurrentLogLable = False
   ColorDict = {
     0 : Fore.RED,
     1 : Fore.GREEN,
@@ -156,7 +191,9 @@ def ShowLog(LogFilePath, LogRefreshTime, AutoRefreshFlag):
   if os.path.exists(LogFilePath):
     with open(LogFilePath) as f:
       for line in f:
-        if "Sio" in line:
+        if "#CurrentLog#" in line:
+          IsFindCurrentLogLable = True
+        if ("Sio" in line) and IsFindCurrentLogLable:
           if "failed" in line:
             StartPos = line.find("failed")
             EndPos = StartPos + len("failed")
@@ -168,6 +205,7 @@ def ShowLog(LogFilePath, LogRefreshTime, AutoRefreshFlag):
         else:
           print(line, end="")
     if AutoRefreshFlag:
+      ProgressBarControl (env, LogFilePath)
       time.sleep(int(LogRefreshTime))
     else:
       sys.exit()
@@ -191,6 +229,7 @@ def CleanLogAndBinaryFile(LogFilePath, ErrorLogFilePath, BinaryRenamePath):
 def ShowErrorLog (ErrorLogFilePath, argv):
   Buffer = []
   count = 0
+  IsFindCurrentLogLable = False
   if os.path.exists(ErrorLogFilePath) and (len(argv) < 3):
     SioList = getSioList(ErrorLogFilePath, "^Sio.*Pkg.log$")
     for line in SioList:
@@ -204,7 +243,9 @@ def ShowErrorLog (ErrorLogFilePath, argv):
     try:
       with open("BIOS/SioLog.txt") as f:
         for line in f:
-          if "Sio" in line:
+          if "#CurrentLog#" in line:
+            IsFindCurrentLogLable = True
+          if ("Sio" in line) and IsFindCurrentLogLable:
             StartPosition = line.find("Sio")
             EndPostion = line.find("Pkg")
             LogDict.append(line[StartPosition:EndPostion+3])
@@ -274,11 +315,12 @@ Fore.RED + "au           " + Fore.RESET + ": Auto Update Log\n" + \
   print(HelpInfo)
 
 def AutoUpdateLog(env):
+  GetSioCount(env)
   LogFilePath = env["LogFilePath"] + env["LogFileName"]
   while True:
     try:
       os.system ("cls")
-      ShowLog (LogFilePath, env["LogRefreshTime"], True)
+      ShowLog (env, LogFilePath, env["LogRefreshTime"], True)
     except KeyboardInterrupt:
       print(Fore.RED + "Program is interrupted!\n")
       sys.exit(0)
@@ -297,7 +339,7 @@ def ArgvCheck(argv, env):
     sys.exit()
   else:
     if argv[1] == "log":
-      ShowLog (LogFilePath, False)
+      ShowLog (env, LogFilePath, 0, False)
     elif argv[1] == "clean":
       CleanLogAndBinaryFile (LogFilePath, ErrorLogFilePath, BinaryRenamePath)
     elif argv[1] == "err":
@@ -412,6 +454,20 @@ def getEnvironment(ConfigPath):
 
   return CurrentSetting
 
+def RemoveOldLabel(env):
+  Path = env["LogFilePath"] + env["LogFileName"]
+  Buffer = []
+  if os.path.exists(Path):
+    with fileinput.FileInput(Path, inplace=False) as f:
+      for line in f:
+        if "#CurrentLog#" in line:
+          continue
+        else:
+          Buffer.append(line)
+    f = open (Path, 'w')
+    for line in Buffer:
+      f.write(line)
+
 def main():
 
   SioDummyPkgDsc = "!import SioDummyPkg/Package.dsc"
@@ -427,6 +483,8 @@ def main():
   failedCount = 0
   notFoundCount = 0
 
+  RemoveOldLabel (env)
+  env["LogFileFunc"]("#CurrentLog#");
   env["LogFileFunc"](seperator);
   env["LogFileFunc"](strftime ("%Y-%m-%d %H:%H:%S", gmtime()))
 
