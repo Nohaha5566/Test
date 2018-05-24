@@ -190,6 +190,7 @@ def DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine):
            if not EndFlag:
              NumRmLine -= 1
              flag = False
+             Buffer.append(line)
            else:
              Buffer.append(line)
          else:
@@ -205,6 +206,11 @@ def DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine):
            Buffer.append(line)
          else:
            NumRmLine -= 1
+
+  f = open(FilePath, 'w')
+  for line in Buffer:
+    f.write(line)
+  f.close()
 
 def ModifyInfFileGuid(FilePath):
   # This function will update GUID in a file
