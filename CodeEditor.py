@@ -156,6 +156,24 @@ def InsertStringToUni(Path, KeyWord, TargetStr):
     for line in Buffer:
       f.write(line)
 
+def InsertStringToUniEx(Path, KeyWord, SrcFile):
+  # This function will insert string under KeyWord string(For unicode file)
+  Buffer = []
+
+  with codecs.open(Path, encoding='utf-16') as file:
+    for line in file:
+      if KeyWord in line:
+        Buffer.append(line)
+        with fileinput.FileInput(SrcFile, inplace=False) as file2:
+          for line2 in file2:
+            Buffer.append(line2)
+      else:
+        Buffer.append(line)
+
+  with codecs.open(Path, 'w', encoding='utf-16') as f:
+    for line in Buffer:
+      f.write(line)
+
 def DeleteStringFromFile(Path, KeyWord):
   # This function will delete string under KeyWord string
   Buffer = []
@@ -332,6 +350,7 @@ def main():
 #  InsertStringToFile(FilePath, KeyWord, String)
 #  InsertStringToFileEx(FilePath, KeyWord, KeyWordCount, ShiftLineNum, SrcFile)
 #  InsertStringToUni(Path, KeyWordStr, TargetStr)
+#  InsertStringToUniEx(Path, KeyWord, SrcFile):
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine)
 #  ModifyInfFileGuid(FilePath)
