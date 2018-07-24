@@ -141,6 +141,19 @@ def InsertStringToFileEx(FilePath, KeyWord, KeyWordCount, ShiftLineNum, SrcFile)
     f.write(line)
   f.close()
 
+def RelplaceStringToUni(Path, BeforStr, AfterStr):
+  # This function will replace string from BeforStr to AfterStr
+  Buffer = []
+  if os.path.exists(Path):
+    with codecs.open(Path, encoding='utf-16') as f2:
+      for line in f2:
+        print(line.replace(BeforStr, AfterStr), end="")
+        Buffer.append(line)
+
+  with codecs.open(Path, 'w', encoding='utf-16') as f:
+    for line in Buffer:
+      f.write(line)
+
 def InsertStringToUni(Path, KeyWord, TargetStr):
   # This function will insert string under KeyWord string(For unicode file)
   Buffer = []
@@ -349,8 +362,9 @@ def main():
 #  RelplaceString(FilePath, BeforStr, AfterStr)
 #  InsertStringToFile(FilePath, KeyWord, String)
 #  InsertStringToFileEx(FilePath, KeyWord, KeyWordCount, ShiftLineNum, SrcFile)
+#  RelplaceStringToUni(Path, BeforStr, AfterStr)
 #  InsertStringToUni(Path, KeyWordStr, TargetStr)
-#  InsertStringToUniEx(Path, KeyWord, SrcFile):
+#  InsertStringToUniEx(Path, KeyWord, SrcFile)
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine)
 #  ModifyInfFileGuid(FilePath)
