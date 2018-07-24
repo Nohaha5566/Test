@@ -264,6 +264,41 @@ def ModifyInfFileGuid(FilePath):
   for line in Buffer:
     TmpFile.write(line)
   TmpFile.close()
+  
+def DeleteStringFromUniEx(FilePath, KeyWord, KeyWordCount, NumRmLine):
+  # This function will delete multi line string under KeyWord string by NumRmLine(It's a integer number)
+  Buffer = []
+  flag = True
+  EndFlag = False
+  Count = 0
+
+  with codecs.open(FilePath, encoding='utf-16') as file2:
+     for line in file2:
+       if KeyWord in line:
+         if Count == KeyWordCount:
+           if not EndFlag:
+             NumRmLine -= 1
+             flag = False
+             #Buffer.append(line)
+           else:
+             Buffer.append(line)
+         else:
+           Buffer.append(line)
+           Count += 1
+
+       elif NumRmLine == 0:
+         flag = True
+         EndFlag = True
+         Buffer.append(line)
+       else:
+         if flag:
+           Buffer.append(line)
+         else:
+           NumRmLine -= 1
+
+  with codecs.open(FilePath, 'w', encoding='utf-16') as f:
+    for line in Buffer:
+      f.write(line)
 
 def ModifyDecAndHeaderFileGuid(FilePath):
   # This function will update GUID in a DEC or Header file
@@ -368,6 +403,7 @@ def main():
 #  InsertStringToUniEx(Path, KeyWord, SrcFile)
 #  DeleteStringFromFile(Path, KeyWord)
 #  DeleteStringFromFileEx(FilePath, KeyWord, KeyWordCount, NumRmLine)
+#  DeleteStringFromUniEx(FilePath, KeyWord, KeyWordCount, NumRmLine)
 #  ModifyInfFileGuid(FilePath)
 #  ModifyDecAndHeaderFileGuid(FilePath)
 #  StringAlign(Path, SampleStr, Format)
