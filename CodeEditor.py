@@ -172,12 +172,13 @@ def InsertStringToUni(Path, KeyWord, TargetStr):
 def InsertStringToUniEx(Path, KeyWord, SrcFile):
   # This function will insert string under KeyWord string(For unicode file)
   Buffer = []
+  Src = open(SrcFile, "r")
 
   with codecs.open(Path, encoding='utf-16') as file:
     for line in file:
       if KeyWord in line:
-        Buffer.append(line)
-        with fileinput.FileInput(SrcFile, inplace=False) as file2:
+        Buffer.append(line + "\n")
+        with codecs.open(SrcFile, encoding='utf-16') as file2:
           for line2 in file2:
             Buffer.append(line2)
       else:
