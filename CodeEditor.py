@@ -10,6 +10,22 @@ import uuid
 import codecs
 from stat import *
 
+def RecursiveDumpFilePath(TopPath, Buffer):
+
+  for file in os.listdir(TopPath):
+    path = os.path.join(TopPath, file)
+    mode = os.stat(path)[ST_MODE]
+    # Check file is folder
+    if S_ISDIR(mode):
+      RecursiveDumpFilePath(path, Buffer)
+    # Check file is file
+    elif S_ISREG(mode):
+     if not path.endswith(".uni"):
+        Buffer.append(path)
+    # unrecognize file type
+    else:
+      print("Error!\n")
+
 def GenerateGuid():
   # This function will generate a set of GUID
   return uuid.uuid4()
@@ -264,7 +280,7 @@ def ModifyInfFileGuid(FilePath):
   for line in Buffer:
     TmpFile.write(line)
   TmpFile.close()
-  
+
 def DeleteStringFromUniEx(FilePath, KeyWord, KeyWordCount, NumRmLine):
   # This function will delete multi line string under KeyWord string by NumRmLine(It's a integer number)
   Buffer = []
